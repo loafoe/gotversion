@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
+	"gopkg.in/src-d/go-git.v4/plumbing/object"
+
 	"os"
 )
 
@@ -35,4 +37,20 @@ func main() {
 		return nil
 	})
 	CheckIfError(err)
+
+	headRef, err := r.Head()
+	CheckIfError(err)
+
+	// ... retrieves the commit history
+	cIter, err := r.Log(&git.LogOptions{From: headRef.Hash()})
+	CheckIfError(err)
+
+	// ... just iterates over the commits, printing it
+	err = cIter.ForEach(func(c *object.Commit) error {
+		fmt.Println(c)
+
+		return nil
+	})
+
+	fmt.Println(headRef)
 }
