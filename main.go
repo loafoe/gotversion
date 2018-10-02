@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
@@ -16,6 +17,30 @@ func CheckIfError(err error) {
 	}
 	fmt.Printf("\x1b[31;1m%s\x1b[0m\n", fmt.Sprintf("error: %s", err))
 	os.Exit(1)
+}
+
+// BranchName returns the branch name which we're on
+func BranchName(r *git.Repository) string {
+	headRef, err := r.Head()
+	if err != nil {
+		return ""
+	}
+	if name := headRef.Name(); name.IsBranch() {
+		return name.Short()
+	}
+	return ""
+}
+
+// TagName returns the tag name of HEAD, if any
+func TagName(r *git.Repository) string {
+	headRef, err := r.Head()
+	if err != nil {
+		return ""
+	}
+	if name := headRef.Name(); name.IsTag() {
+		return "tag:" + name.Short()
+	}
+	return "notag"
 }
 
 func main() {
@@ -41,14 +66,15 @@ func main() {
 	headRef, err := r.Head()
 	CheckIfError(err)
 
+	fmt.Printf("Branch=%s\n", BranchName(r))
+	fmt.Printf("Tag=%s\n", TagName(r))
+
 	// ... retrieves the commit history
 	cIter, err := r.Log(&git.LogOptions{From: headRef.Hash()})
 	CheckIfError(err)
 
 	// ... just iterates over the commits, printing it
 	err = cIter.ForEach(func(c *object.Commit) error {
-		fmt.Println(c)
-
 		return nil
 	})
 
