@@ -16,5 +16,5 @@ type Tag struct {
 }
 
 func (t Tag) String() string {
-	return fmt.Sprintf("%s [annotated=%t] %s", t.Reference.Hash(), t.IsAnnoted, t.Hash)
+	return fmt.Sprintf("v%s [annotated=%t] %s", t.Version, t.IsAnnoted, t.Hash)
 }

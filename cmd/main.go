@@ -9,6 +9,7 @@ import (
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
+	"gopkg.in/src-d/go-git.v4/plumbing/storer"
 
 	"os"
 )
@@ -87,24 +88,11 @@ func main() {
 	r, err := git.PlainOpen(path)
 	CheckIfError(err)
 
-	tagrefs, err := r.Tags()
-	CheckIfError(err)
-
-	err = tagrefs.ForEach(func(t *plumbing.Reference) error {
-		fmt.Println(t)
-		return nil
-	})
-	CheckIfError(err)
-
 	semverTags, err := SemverTags(r)
 	CheckIfError(err)
 
 	fmt.Printf("%d SemverTags found\n", len(*semverTags))
-	if len(*semverTags) > 0 {
-		for _, t := range *semverTags {
-			fmt.Println(t)
-		}
-	}
+	totalSemvers := len(*semverTags)
 
 	headRef, err := r.Head()
 	CheckIfError(err)
@@ -119,23 +107,35 @@ func main() {
 
 	// ... just iterates over the commits, printing it
 	baseVersions := gotversion.BaseCollection{}
-	var offset int64
+	var offset int
 	err = cIter.ForEach(func(c *object.Commit) error {
 		for _, t := range *semverTags {
 			if t.Hash == c.Hash.String() {
-				fmt.Println("Adding baseVersion...")
+				//fmt.Println("Adding baseVersion...")
 				baseVersions = append(baseVersions, &gotversion.Base{
+					Head:     headRef.String(),
 					Branch:   branchName,
-					Strategy: "w0t",
+					Strategy: gotversion.Patch,
 					Version:  t.Version,
 					Offset:   offset,
+					Tag:      t,
 				})
 			}
+		}
+		if totalSemvers > 0 && len(baseVersions) >= totalSemvers {
+			//fmt.Println("Stopping")
+			return storer.ErrStop
 		}
 		offset++
 		return nil
 	})
 	sort.Sort(baseVersions)
-
-	fmt.Println(baseVersions[len(baseVersions)-1])
+	if len(baseVersions) > 0 {
+		baseVersion := baseVersions[len(baseVersions)-1]
+		fmt.Println(baseVersion)
+		baseVersion.Bump()
+		fmt.Printf("output=v%s", baseVersion.Semver())
+	} else {
+		fmt.Printf("No semver tags found: offset=%d\n", offset)
+	}
 }
