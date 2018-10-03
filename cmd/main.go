@@ -5,33 +5,13 @@ import (
 	"sort"
 
 	version "github.com/hashicorp/go-version"
+	"github.com/loafoe/gotversion"
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 
 	"os"
 )
-
-type BaseVersion struct {
-	*version.Version
-	Branch   string
-	Strategy string
-	Offset   int64
-}
-
-type BaseCollection []*BaseVersion
-
-func (v BaseCollection) Len() int {
-	return len(v)
-}
-
-func (v BaseCollection) Less(i, j int) bool {
-	return v[i].Version.LessThan(v[j].Version)
-}
-
-func (v BaseCollection) Swap(i, j int) {
-	v[i], v[j] = v[j], v[i]
-}
 
 // CheckIfError should be used to naively panics if an error is not nil.
 func CheckIfError(err error) {
@@ -66,29 +46,17 @@ func TagName(r *git.Repository) string {
 	return "notag"
 }
 
-// Tag holds our representation of a Tag (both annoted and lightweight)
-type Tag struct {
-	*version.Version
-	Reference plumbing.Reference
-	IsAnnoted bool
-	Hash      string
-}
-
-func (t Tag) String() string {
-	return fmt.Sprintf("%s [annotated=%t] %s", t.Reference.Hash(), t.IsAnnoted, t.Hash)
-}
-
 // SemverTags returns only valid semver tags
-func SemverTags(r *git.Repository) (*[]Tag, error) {
+func SemverTags(r *git.Repository) (*[]gotversion.Tag, error) {
 	tagrefs, err := r.Tags()
 	if err != nil {
 		return nil, err
 	}
-	list := []Tag{}
+	list := []gotversion.Tag{}
 	err = tagrefs.ForEach(func(t *plumbing.Reference) error {
 		tagName := t.Name().Short()
 		if v, err := version.NewVersion(tagName); err == nil {
-			tag := Tag{
+			tag := gotversion.Tag{
 				Version:   v,
 				Reference: *t,
 				Hash:      t.Hash().String(),
@@ -150,14 +118,14 @@ func main() {
 	CheckIfError(err)
 
 	// ... just iterates over the commits, printing it
-	baseVersions := BaseCollection{}
+	baseVersions := gotversion.BaseCollection{}
 	var offset int64
 	err = cIter.ForEach(func(c *object.Commit) error {
 		offset++
 		for _, t := range *semverTags {
 			if t.Hash == c.Hash.String() {
 				fmt.Println("Adding baseVersion...")
-				baseVersions = append(baseVersions, &BaseVersion{
+				baseVersions = append(baseVersions, &gotversion.Base{
 					Branch:   branchName,
 					Strategy: "w0t",
 					Version:  t.Version,

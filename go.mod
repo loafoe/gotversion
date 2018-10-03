@@ -8,7 +8,9 @@ require (
 	github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568 // indirect
 	github.com/gliderlabs/ssh v0.1.1 // indirect
 	github.com/google/go-cmp v0.2.0 // indirect
+	github.com/google/pprof v0.0.0-20181002142953-f36417847b1c // indirect
 	github.com/hashicorp/go-version v1.0.0
+	github.com/ianlancetaylor/demangle v0.0.0-20180714043527-fcd258a6f0b4 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e // indirect
 	github.com/mitchellh/go-homedir v1.0.0 // indirect
@@ -19,6 +21,7 @@ require (
 	github.com/src-d/gcfg v1.3.0 // indirect
 	github.com/stretchr/testify v1.2.2 // indirect
 	github.com/xanzy/ssh-agent v0.2.0 // indirect
+	golang.org/x/arch v0.0.0-20180920145803-b19384d3c130 // indirect
 	golang.org/x/crypto v0.0.0-20181001203147-e3636079e1a4 // indirect
 	golang.org/x/net v0.0.0-20180926154720-4dfa2610cdf3 // indirect
 	golang.org/x/text v0.3.0 // indirect
