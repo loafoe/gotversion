@@ -1,4 +1,4 @@
-module github.com/loafoe/getver
+module github.com/loafoe/gotversion
 
 require (
 	github.com/alcortesm/tgz v0.0.0-20161220082320-9c5fe88206d7 // indirect
@@ -8,6 +8,7 @@ require (
 	github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568 // indirect
 	github.com/gliderlabs/ssh v0.1.1 // indirect
 	github.com/google/go-cmp v0.2.0 // indirect
+	github.com/hashicorp/go-version v1.0.0
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e // indirect
 	github.com/mitchellh/go-homedir v1.0.0 // indirect
