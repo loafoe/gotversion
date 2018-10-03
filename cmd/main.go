@@ -121,7 +121,6 @@ func main() {
 	baseVersions := gotversion.BaseCollection{}
 	var offset int64
 	err = cIter.ForEach(func(c *object.Commit) error {
-		offset++
 		for _, t := range *semverTags {
 			if t.Hash == c.Hash.String() {
 				fmt.Println("Adding baseVersion...")
@@ -133,6 +132,7 @@ func main() {
 				})
 			}
 		}
+		offset++
 		return nil
 	})
 	sort.Sort(baseVersions)
