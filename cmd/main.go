@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"sort"
 
@@ -78,12 +79,18 @@ func SemverTags(r *git.Repository) (*[]gotversion.Tag, error) {
 }
 
 func main() {
-	if len(os.Args) < 2 {
-		fmt.Printf("usage: getver <path>\n")
+
+	showJSON := flag.Bool("json", false, "output JSON")
+	showVSO := flag.Bool("vso", true, "output VSO")
+	flag.Parse()
+
+	args := flag.Args()
+
+	if len(args) == 0 {
+		fmt.Printf("usage: gotversion [-json|-vso] path\n")
 		os.Exit(1)
 	}
-
-	path := os.Args[1]
+	path := args[0]
 
 	r, err := git.PlainOpen(path)
 	CheckIfError(err)
@@ -136,7 +143,13 @@ func main() {
 	if len(baseVersions) > 0 {
 		baseVersion := baseVersions[len(baseVersions)-1]
 		baseVersion.Bump()
-		gotversion.OutputJSON(baseVersion)
+		if *showJSON {
+			*showVSO = false
+			gotversion.OutputJSON(baseVersion)
+		}
+		if *showVSO {
+			gotversion.OutputVSO(baseVersion)
+		}
 	} else {
 		fmt.Printf("No semver tags found: offset=%d\n", offset)
 	}
