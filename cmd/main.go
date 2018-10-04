@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sort"
 
+	version "github.com/hashicorp/go-version"
 	"github.com/loafoe/gotversion"
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
@@ -65,7 +66,6 @@ func main() {
 	err = cIter.ForEach(func(c *object.Commit) error {
 		for _, t := range *semverTags {
 			if t.Hash == c.Hash.String() {
-				//fmt.Println("Adding baseVersion...")
 				baseVersions = append(baseVersions, &gotversion.Base{
 					Head:     headCommit,
 					Branch:   branchName,
@@ -76,25 +76,38 @@ func main() {
 				})
 			}
 		}
+		// Optimization
 		if totalSemvers > 0 && len(baseVersions) >= totalSemvers {
-			//fmt.Println("Stopping")
 			return storer.ErrStop
 		}
 		offset++
 		return nil
 	})
+
+	var baseVersion *gotversion.Base
+
 	sort.Sort(baseVersions)
 	if len(baseVersions) > 0 {
-		baseVersion := baseVersions[len(baseVersions)-1]
-		baseVersion.Bump()
-		if *showJSON {
-			*showVSO = false
-			gotversion.OutputJSON(baseVersion)
-		}
-		if *showVSO {
-			gotversion.OutputVSO(baseVersion)
-		}
+		baseVersion = baseVersions[len(baseVersions)-1]
 	} else {
-		fmt.Printf("No semver tags found: offset=%d\n", offset)
+		version, _ := version.NewVersion("v0.0.0")
+		baseVersion = &gotversion.Base{
+			Version:  version,
+			Head:     headCommit,
+			Branch:   branchName,
+			Strategy: gotversion.Minor,
+			Offset:   offset,
+			Tag:      gotversion.Tag{},
+		}
+	}
+	if !baseVersion.HeadTag() {
+		baseVersion.Bump()
+	}
+	if *showJSON {
+		*showVSO = false
+		gotversion.OutputJSON(baseVersion)
+	}
+	if *showVSO {
+		gotversion.OutputVSO(baseVersion)
 	}
 }

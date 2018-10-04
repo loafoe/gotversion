@@ -24,6 +24,9 @@ func (b *Base) Bump() error {
 	case "develop":
 		strategy = Minor
 	}
+	if b.Tag.Hash == "" { // No tags found!
+		strategy = Minor
+	}
 	newVersion, err := Bump(b.Version, strategy)
 	if err != nil {
 		return err
@@ -39,6 +42,21 @@ func (b Base) Semver() string {
 		return b.Version.String()
 	}
 	return fmt.Sprintf("%s-%s.%d", b.Version.String(), label, b.Offset)
+}
+
+// HeadTag returns true if the tag is on the branch head
+// Typically this means we should not Bump() the version
+func (b Base) HeadTag() bool {
+	return b.Offset == 0
+}
+
+// FullSemver returns Semver with offset in case no tags are there
+func (b Base) FullSemver() string {
+	if !b.HeadTag() {
+		return fmt.Sprintf("%s+%d", b.Version.String(), b.Offset)
+	}
+	// Tag is on the head
+	return b.Semver()
 }
 
 // PreReleaseLabel is determined by the branch name
