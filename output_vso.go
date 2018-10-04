@@ -8,6 +8,7 @@ func OutputVSO(base *Base) error {
 	fmt.Printf(vsoString("GotFullSemVer", base.FullSemver()))
 	fmt.Printf(vsoString("GotSHA", base.Commit()))
 	fmt.Printf(vsoString("GotCommitDate", base.CommitDate()))
+	fmt.Printf(vsoString("GotBranchName", base.BranchName()))
 	return nil
 }
 
