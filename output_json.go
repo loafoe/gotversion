@@ -10,6 +10,7 @@ type outputJSON struct {
 	Minor             int    `json:"Minor"`
 	Patch             int    `json:"Patch"`
 	SemVer            string `json:"SemVer,omitempty"`
+	FullSemVer        string `json:"FUllSemVer,omitempty"`
 	MajorMinorPatch   string `json:"MajorMinorPatch,omitempty"`
 	PreReleaseLabel   string `json:"PreReleaseLabel,omitempty"`
 	PreReleaseNumber  int    `json:"PreReleaseNumber,omitempty"`
@@ -26,6 +27,7 @@ func OutputJSON(base *Base) error {
 		Minor:             base.Minor(),
 		Patch:             base.Patch(),
 		SemVer:            base.Semver(),
+		FullSemVer:        base.FullSemver(),
 		SHA:               base.Commit(),
 		CommitDate:        base.CommitDate(),
 		MajorMinorPatch:   base.MajorMinorPatch(),

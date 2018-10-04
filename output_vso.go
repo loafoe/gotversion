@@ -5,6 +5,7 @@ import "fmt"
 // OutputVSO outputs variables to Azure DevOPS output
 func OutputVSO(base *Base) error {
 	fmt.Printf(vsoString("GotSemVer", base.Semver()))
+	fmt.Printf(vsoString("GotFullSemVer", base.FullSemver()))
 	fmt.Printf(vsoString("GotSHA", base.Commit()))
 	fmt.Printf(vsoString("GotCommitDate", base.CommitDate()))
 	return nil
