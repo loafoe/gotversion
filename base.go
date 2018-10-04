@@ -4,20 +4,18 @@ import (
 	"fmt"
 
 	version "github.com/hashicorp/go-version"
+	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
 
 // Base is a (potential) base version
 type Base struct {
 	*version.Version
-	Head     string
+	Head     *object.Commit
 	Branch   string
 	Strategy Strategy
 	Offset   int
 	Tag      Tag
 }
-
-// BaseCollection implements the Sortable interface
-type BaseCollection []*Base
 
 // Bump version
 func (b *Base) Bump() error {
@@ -54,9 +52,19 @@ func (b Base) PreReleaseLabel() string {
 	return ""
 }
 
+// BuildMetadata returns the offset
+func (b Base) BuildMetadata() int {
+	return b.Offset
+}
+
+// MajorMinorPatch returns the primary semver string
+func (b Base) MajorMinorPatch() string {
+	return fmt.Sprintf("%d.%d.%d", b.Major(), b.Minor(), b.Patch())
+}
+
 // FullBuildMetaData returns branch and SHA details
 func (b Base) FullBuildMetaData() string {
-	return "Branch." + b.Branch + "Sha." + b.Head
+	return fmt.Sprintf("Branch.%s.Sha.%s", b.Branch, b.Head.Hash.String())
 }
 
 // PreReleaseNumber returns the number of commits since the Base
@@ -68,14 +76,41 @@ func (b Base) String() string {
 	return fmt.Sprintf("semver=v%s branch=%s offset=%d", b.Version.String(), b.Branch, b.Offset)
 }
 
-func (v BaseCollection) Len() int {
-	return len(v)
+// Major returns the Major semver element
+func (b Base) Major() int {
+	if b.Version == nil {
+		return 0
+	}
+	return b.Version.Segments()[0]
 }
 
-func (v BaseCollection) Less(i, j int) bool {
-	return v[i].Version.LessThan(v[j].Version)
+// Minor returns the Minor semver element
+func (b Base) Minor() int {
+	if b.Version == nil {
+		return 0
+	}
+	return b.Version.Segments()[1]
 }
 
-func (v BaseCollection) Swap(i, j int) {
-	v[i], v[j] = v[j], v[i]
+// Patch returns the Major semver element
+func (b Base) Patch() int {
+	if b.Version == nil {
+		return 0
+	}
+	return b.Version.Segments()[2]
+}
+
+// Commit returns the hash of the head
+func (b Base) Commit() string {
+	return b.Head.Hash.String()
+}
+
+// CommitDate returns the commit date of head
+func (b Base) CommitDate() string {
+	return b.Head.Author.When.UTC().Format("2006-01-02")
+}
+
+// BranchName returns the branch name
+func (b Base) BranchName() string {
+	return b.Branch
 }
