@@ -34,8 +34,11 @@ func Bump(currentVersion *version.Version, strategy Strategy) (*version.Version,
 	switch strategy {
 	case Major:
 		major++
+		minor = 0
+		patch = 0
 	case Minor:
 		minor++
+		patch = 0
 	case Patch:
 		patch++
 	}
