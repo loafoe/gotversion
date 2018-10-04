@@ -44,7 +44,12 @@ func main() {
 	CheckIfError(err)
 
 	//fmt.Printf("%d SemverTags found\n", len(*semverTags))
-	totalSemvers := len(*semverTags)
+	tagCollection := gotversion.TagCollection{}
+	for _, t := range *semverTags {
+		newTag := t
+		tagCollection = append(tagCollection, &newTag)
+	}
+	sort.Sort(sort.Reverse(tagCollection))
 
 	headRef, err := r.Head()
 	CheckIfError(err)
@@ -61,35 +66,31 @@ func main() {
 	CheckIfError(err)
 
 	// ... just iterates over the commits, printing it
-	baseVersions := gotversion.BaseCollection{}
+	var baseVersion *gotversion.Base
 	var offset int
 	err = cIter.ForEach(func(c *object.Commit) error {
-		for _, t := range *semverTags {
+		for _, t := range tagCollection {
 			if t.Hash == c.Hash.String() {
-				baseVersions = append(baseVersions, &gotversion.Base{
+				baseVersion = &gotversion.Base{
 					Head:     headCommit,
 					Branch:   branchName,
 					Strategy: gotversion.Patch,
 					Version:  t.Version,
 					Offset:   offset,
-					Tag:      t,
-				})
+					Tag:      *t,
+				}
+				break
 			}
 		}
-		// Optimization
-		if totalSemvers > 0 && len(baseVersions) >= totalSemvers {
+		if baseVersion != nil {
+			// Stop immediately
 			return storer.ErrStop
 		}
 		offset++
 		return nil
 	})
 
-	var baseVersion *gotversion.Base
-
-	sort.Sort(baseVersions)
-	if len(baseVersions) > 0 {
-		baseVersion = baseVersions[len(baseVersions)-1]
-	} else {
+	if baseVersion == nil { // No semver tags found
 		version, _ := version.NewVersion("v0.0.0")
 		baseVersion = &gotversion.Base{
 			Version:  version,
