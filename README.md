@@ -39,11 +39,11 @@ These lines, when executed as a Docker run task in an Azure DevOPS (VSTS) pipeli
 
 | Variable              | ENV name              | Description                           |
 |-----------------------|-----------------------|---------------------------------------|
-| `${Docker.GotSemVer}`     | `$DOCKER_GOTSEMVER`     | Abbreviated semantic version of the current build |
-| `${Docker.GotFullSemVer}` | `$DOCKER_GOTFULLSEMVER` | The full semantic version (recommended) | 
-| `${Docker.GotSHA}`        | `$DOCKER_GOTSHA`        | The full SHA1 of the branch head |
-| `${Docker.GotCommitDate}` | `$DOCKER_COMMITDATE`    | The date of the commit in `YYYY-MM-DD` format |
-| `${Docker.GotBranchName}` | `$DOCKER_GOTBRANCHNAME` | The Git branch name |
+| `$(Docker.GotSemVer)`     | `$DOCKER_GOTSEMVER`     | Abbreviated semantic version of the current build |
+| `$(Docker.GotFullSemVer)` | `$DOCKER_GOTFULLSEMVER` | The full semantic version (recommended) | 
+| `$(Docker.GotSHA)`        | `$DOCKER_GOTSHA`        | The full SHA1 of the branch head |
+| `$(Docker.GotCommitDate)` | `$DOCKER_COMMITDATE`    | The date of the commit in `YYYY-MM-DD` format |
+| `$(Docker.GotBranchName)` | `$DOCKER_GOTBRANCHNAME` | The Git branch name |
 
 
 You can also have it emit JSON:
