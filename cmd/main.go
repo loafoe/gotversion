@@ -91,18 +91,21 @@ func main() {
 	semverTags, err := SemverTags(r)
 	CheckIfError(err)
 
-	fmt.Printf("%d SemverTags found\n", len(*semverTags))
+	//fmt.Printf("%d SemverTags found\n", len(*semverTags))
 	totalSemvers := len(*semverTags)
 
 	headRef, err := r.Head()
 	CheckIfError(err)
 
 	branchName := BranchName(r)
-	fmt.Printf("Branch=%s\n", branchName)
-	fmt.Printf("Tag=%s\n", TagName(r))
+	//fmt.Printf("Branch=%s\n", branchName)
+	//fmt.Printf("Tag=%s\n", TagName(r))
 
 	// ... retrieves the commit history
 	cIter, err := r.Log(&git.LogOptions{From: headRef.Hash()})
+	CheckIfError(err)
+
+	headCommit, err := r.CommitObject(headRef.Hash())
 	CheckIfError(err)
 
 	// ... just iterates over the commits, printing it
@@ -113,7 +116,7 @@ func main() {
 			if t.Hash == c.Hash.String() {
 				//fmt.Println("Adding baseVersion...")
 				baseVersions = append(baseVersions, &gotversion.Base{
-					Head:     headRef.String(),
+					Head:     headCommit,
 					Branch:   branchName,
 					Strategy: gotversion.Patch,
 					Version:  t.Version,
@@ -132,9 +135,8 @@ func main() {
 	sort.Sort(baseVersions)
 	if len(baseVersions) > 0 {
 		baseVersion := baseVersions[len(baseVersions)-1]
-		fmt.Println(baseVersion)
 		baseVersion.Bump()
-		fmt.Printf("output=v%s", baseVersion.Semver())
+		gotversion.OutputJSON(baseVersion)
 	} else {
 		fmt.Printf("No semver tags found: offset=%d\n", offset)
 	}
