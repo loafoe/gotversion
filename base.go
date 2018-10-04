@@ -2,10 +2,18 @@ package gotversion
 
 import (
 	"fmt"
+	"regexp"
+	"strings"
 
 	version "github.com/hashicorp/go-version"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
+
+var featureRegexp *regexp.Regexp
+
+func init() {
+	featureRegexp = regexp.MustCompile(`^feature/`)
+}
 
 // Base is a (potential) base version
 type Base struct {
@@ -41,7 +49,8 @@ func (b Base) Semver() string {
 	if label == "" {
 		return b.Version.String()
 	}
-	return fmt.Sprintf("%s-%s.%d", b.Version.String(), label, b.Offset)
+	fmtString := "%s-%s.%d"
+	return fmt.Sprintf(fmtString, b.Version.String(), label, b.Offset)
 }
 
 // HeadTag returns true if the tag is on the branch head
@@ -52,22 +61,46 @@ func (b Base) HeadTag() bool {
 
 // FullSemver returns Semver with offset in case no tags are there
 func (b Base) FullSemver() string {
-	if !b.HeadTag() {
+	if b.IsMasterBranch() && !b.HeadTag() {
 		return fmt.Sprintf("%s+%d", b.Version.String(), b.Offset)
+	}
+	if b.HeadTag() {
+		return b.Semver()
+	}
+	if label := b.PreReleaseLabel(); label != "" {
+		return fmt.Sprintf("%s-%s+%d", b.Version.String(), label, b.Offset)
 	}
 	// Tag is on the head
 	return b.Semver()
 }
 
+// IsMasterBranch returns true if we are on the master branch
+func (b Base) IsMasterBranch() bool {
+	return b.Branch == "master"
+}
+
+// IsDevelopBranch return true if we are on the develop branch
+func (b Base) IsDevelopBranch() bool {
+	return b.Branch == "develop"
+}
+
+// IsFeatureBranch returns true if we are on a feature branch
+func (b Base) IsFeatureBranch() bool {
+	return featureRegexp.FindStringSubmatch(b.Branch) != nil
+}
+
 // PreReleaseLabel is determined by the branch name
 func (b Base) PreReleaseLabel() string {
-	switch b.Branch {
-	case "develop":
+	if b.IsDevelopBranch() {
 		return "alpha"
-	case "master":
+	}
+	if b.IsMasterBranch() {
 		return ""
 	}
-	return ""
+	if b.IsFeatureBranch() {
+		return strings.Replace(b.Branch, "feature/", "", 1) + ".1"
+	}
+	return b.Branch
 }
 
 // BuildMetadata returns the offset
@@ -86,8 +119,8 @@ func (b Base) FullBuildMetaData() string {
 }
 
 // PreReleaseNumber returns the number of commits since the Base
-func (b Base) PreReleaseNumber() int {
-	return b.Offset
+func (b Base) PreReleaseNumber() string {
+	return ""
 }
 
 func (b Base) String() string {

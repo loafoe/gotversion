@@ -10,10 +10,9 @@ type outputJSON struct {
 	Minor             int    `json:"Minor"`
 	Patch             int    `json:"Patch"`
 	SemVer            string `json:"SemVer,omitempty"`
-	FullSemVer        string `json:"FUllSemVer,omitempty"`
+	FullSemVer        string `json:"FullSemVer,omitempty"`
 	MajorMinorPatch   string `json:"MajorMinorPatch,omitempty"`
 	PreReleaseLabel   string `json:"PreReleaseLabel,omitempty"`
-	PreReleaseNumber  int    `json:"PreReleaseNumber,omitempty"`
 	BranchName        string `json:"BranchName,omitempty"`
 	SHA               string `json:"Sha,omitempty"`
 	CommitDate        string `json:"CommitDate,omitempty"`
@@ -34,7 +33,6 @@ func OutputJSON(base *Base) error {
 		BranchName:        base.BranchName(),
 		FullBuildMetaData: base.FullBuildMetaData(),
 		PreReleaseLabel:   base.PreReleaseLabel(),
-		PreReleaseNumber:  base.PreReleaseNumber(),
 	}
 	output, err := json.MarshalIndent(data, "", "  ")
 	if err != nil {
