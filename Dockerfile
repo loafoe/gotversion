@@ -11,5 +11,5 @@ WORKDIR /app
 COPY --from=builder /build/gotversion /app
 RUN apk --no-cache add ca-certificates
 
-EXPOSE 8080
-CMD ["/app/gotversion"]
+VOLUME ["/repo"]
+CMD ["/app/gotversion", "/repo"]
