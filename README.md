@@ -35,16 +35,31 @@ By default it outputs VSO lines:
 
 ## Azure DevOPS
 
+### Setup
+
+Choose `Docker` task and configure as follows:
+ 
+| Section            | Setting            | Value                                     |
+|--------------------|--------------------|-------------------------------------------|
+| Container Registry | Point to your docker registry |                                |
+| Commands           | Command            | `run`                                     |
+|                    | Volumes            | `$(System.DefaultWorkingDirectory):/repo` |
+|                    | Image name         | Point to your gotversion image            |         
+| Output Variables   | Reference Name     | `GotVersion`                              |
+
+
+### Task Variables
 These lines, when executed as a Docker run task in an Azure DevOPS (VSTS) pipeline will inject the following variable for use in downstream tasks:
 
 | Variable              | ENV name              | Description                           |
 |-----------------------|-----------------------|---------------------------------------|
-| `$(Docker.GotSemVer)`     | `$DOCKER_SEMVER`     | Abbreviated semantic version of the current build |
-| `$(Docker.GotFullSemVer)` | `$DOCKER_FULLSEMVER` | The full semantic version (recommended) | 
-| `$(Docker.GotSHA)`        | `$DOCKER_SHA`        | The full SHA1 of the branch head |
-| `$(Docker.GotCommitDate)` | `$DOCKER_COMMITDATE`    | The date of the commit in `YYYY-MM-DD` format |
-| `$(Docker.GotBranchName)` | `$DOCKER_BRANCHNAME` | The Git branch name |
+| `$(GotVersion.GotSemVer)`     | `$GOTVERSION_SEMVER`     | Abbreviated semantic version of the current build |
+| `$(GotVersion.GotFullSemVer)` | `$GOTVERSION_FULLSEMVER` | The full semantic version (recommended) | 
+| `$(GotVersion.GotSHA)`        | `$GOTVERSION_SHA`        | The full SHA1 of the branch head |
+| `$(GotVersion.GotCommitDate)` | `$GOTVERSION_COMMITDATE`    | The date of the commit in `YYYY-MM-DD` format |
+| `$(GotVersion.GotBranchName)` | `$GOTVERSION_BRANCHNAME` | The Git branch name |
 
+## Command line
 
 You can also have it emit JSON:
 
