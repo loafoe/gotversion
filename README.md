@@ -53,11 +53,11 @@ These lines, when executed as a Docker run task in an Azure DevOPS (VSTS) pipeli
 
 | Variable              | ENV name              | Description                           |
 |-----------------------|-----------------------|---------------------------------------|
-| `$(GotVersion.GotSemVer)`     | `$GOTVERSION_SEMVER`     | Abbreviated semantic version of the current build |
-| `$(GotVersion.GotFullSemVer)` | `$GOTVERSION_FULLSEMVER` | The full semantic version (recommended) | 
-| `$(GotVersion.GotSHA)`        | `$GOTVERSION_SHA`        | The full SHA1 of the branch head |
-| `$(GotVersion.GotCommitDate)` | `$GOTVERSION_COMMITDATE`    | The date of the commit in `YYYY-MM-DD` format |
-| `$(GotVersion.GotBranchName)` | `$GOTVERSION_BRANCHNAME` | The Git branch name |
+| `$(GotVersion.SemVer)`     | `$GOTVERSION_SEMVER`     | Abbreviated semantic version of the current build |
+| `$(GotVersion.FullSemVer)` | `$GOTVERSION_FULLSEMVER` | The full semantic version (recommended) | 
+| `$(GotVersion.SHA)`        | `$GOTVERSION_SHA`        | The full SHA1 of the branch head |
+| `$(GotVersion.CommitDate)` | `$GOTVERSION_COMMITDATE`    | The date of the commit in `YYYY-MM-DD` format |
+| `$(GotVersion.BranchName)` | `$GOTVERSION_BRANCHNAME` | The Git branch name |
 
 ## Command line
 
