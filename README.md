@@ -26,11 +26,11 @@ $ docker run --rm -v /path/to/git/repository:/repo gotversion
 By default it outputs VSO lines:
 
 ```
-##vso[task.setvariable variable=GotSemVer;isOutput=true;]0.4.0
-##vso[task.setvariable variable=GotFullSemVer;isOutput=true;]0.4.0
-##vso[task.setvariable variable=GotSHA;isOutput=true;]0de2be93db13828f1d5f43896406f4902ab4159c
-##vso[task.setvariable variable=GotCommitDate;isOutput=true;]2018-10-04
-##vso[task.setvariable variable=GotBranchName;isOutput=true;]master
+##vso[task.setvariable variable=SemVer;isOutput=true;]0.4.0
+##vso[task.setvariable variable=FullSemVer;isOutput=true;]0.4.0
+##vso[task.setvariable variable=SHA;isOutput=true;]0de2be93db13828f1d5f43896406f4902ab4159c
+##vso[task.setvariable variable=CommitDate;isOutput=true;]2018-10-04
+##vso[task.setvariable variable=BranchName;isOutput=true;]master
 ```
 
 ## Azure DevOPS
@@ -39,11 +39,11 @@ These lines, when executed as a Docker run task in an Azure DevOPS (VSTS) pipeli
 
 | Variable              | ENV name              | Description                           |
 |-----------------------|-----------------------|---------------------------------------|
-| `$(Docker.GotSemVer)`     | `$DOCKER_GOTSEMVER`     | Abbreviated semantic version of the current build |
-| `$(Docker.GotFullSemVer)` | `$DOCKER_GOTFULLSEMVER` | The full semantic version (recommended) | 
-| `$(Docker.GotSHA)`        | `$DOCKER_GOTSHA`        | The full SHA1 of the branch head |
+| `$(Docker.GotSemVer)`     | `$DOCKER_SEMVER`     | Abbreviated semantic version of the current build |
+| `$(Docker.GotFullSemVer)` | `$DOCKER_FULLSEMVER` | The full semantic version (recommended) | 
+| `$(Docker.GotSHA)`        | `$DOCKER_SHA`        | The full SHA1 of the branch head |
 | `$(Docker.GotCommitDate)` | `$DOCKER_COMMITDATE`    | The date of the commit in `YYYY-MM-DD` format |
-| `$(Docker.GotBranchName)` | `$DOCKER_GOTBRANCHNAME` | The Git branch name |
+| `$(Docker.GotBranchName)` | `$DOCKER_BRANCHNAME` | The Git branch name |
 
 
 You can also have it emit JSON:
